@@ -34,6 +34,8 @@ Redmine内置的消息推送。
 
 文件传输。
 
+生产环境Redis支持。
+
 安装过程：
 
 1、下载源码压缩包，展开到Redmine的plugins目录下，保证有redmine_layim目录。
