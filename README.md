@@ -8,5 +8,6 @@ http://layim.layui.com/
 LayIM前端插件需要获得授权，没有开源，相关文件可以查看gitignore文件，请到http://www.layim.com官网获取授权之后，追加LayIM的特定文件即可。
 
 可以在中国最大的Redmine讨论千人群找到我并参与讨论，QQ群号为：138524445。我是管理员tigergm。
+该插件在Redmine官方的插件注册地址为：http://www.redmine.org/plugins/redmine_layim，请多支持。
 
 以后会陆续加入贡献者名单。
