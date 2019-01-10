@@ -16,4 +16,5 @@ LayIM前端插件需要获得授权，没有开源，相关文件可以查看git
 
 该插件在Redmine官方的插件注册地址为：http://www.redmine.org/plugins/redmine_layim，请多支持。
 
+
 以后会陆续加入贡献者名单。
