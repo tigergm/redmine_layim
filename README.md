@@ -2,7 +2,7 @@
 
 http://layim.layui.com
 
-该插件仅支持Redmine 4及以上版本，因为自从Redmine 4开始基于Rails 5构建，内置了ActionCable的WebSocket技术，可以进行实时的信息订阅及发布，不需要另外建立WebSocke系统。
+该插件仅支持Redmine 4及以上版本，因为自从Redmine 4开始基于Rails 5构建，内置了ActionCable的WebSocket技术，可以进行实时的信息订阅及发布，不需要另外建立WebSocke系统。目前仅支持中文（This is currently only supporting Chinese Language.）。
 
 另外，LayIM的生态圈包括了Java，Php，Node.js，.Net等实现案例，唯独缺Ruby On Rails，所以利用Redmine最新版4.0进行集成，作为Rails领域的案例参考，补充这一空白，也希望能够纳入到LayIM的接入案例库。
 
