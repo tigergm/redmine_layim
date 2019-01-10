@@ -17,5 +17,34 @@ LayIM前端插件需要获得授权，没有开源，相关文件可以查看git
 该插件在Redmine官方的插件注册地址为：http://www.redmine.org/plugins/redmine_layim
 请多支持。
 
+贡献者名单：
 
-以后会陆续加入贡献者名单。
+以后会陆续加入。
+
+已知bug：
+
+项目组群会显示为佚名。
+
+功能规划：
+
+Redmine内置的消息推送。
+
+图片传输。
+
+文件传输。
+
+安装过程：
+
+1、下载源码压缩包，展开到Redmine的plugins目录下，保证有redmine_layim目录。
+
+2、安装必要的gem类库，如果是生产环境，则建议带--without参数：
+bundle install --without development test
+
+3、执行数据迁移：
+rake redmine:plugins:migrate NAME=redmine_layim RAILS_ENV=production
+
+4、复制必要的文件以启用ActionCable：
+1）把others目录下的文件复制到Redmine根目录。
+2）把获得授权的layim.css和layim.js放到assets目录的相应位置，参见gitignore文件。
+
+5、重启redmine。
