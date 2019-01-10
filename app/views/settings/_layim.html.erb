@@ -1,0 +1,4 @@
+<p>  <%= label_tag :settings_layim_enabled, l(:layim_enabled) %>
+<%= check_box_tag 'settings[layim_enabled]', 1, @settings[:layim_enabled] %> </p>
+<p>  <%= label_tag :settings_layim_min_title, l(:layim_min_title) %>
+<%= text_field_tag "settings[layim_min_title]", @settings[:layim_min_title] %> </p>

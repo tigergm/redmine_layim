@@ -1,0 +1,9 @@
+# English strings go here for Rails i18n
+zh:
+  # my_label: "My label"
+  layim_min_title: "主面板最小化标题"
+  default_layim_min_title: "RIM即时通讯"
+  layim_enabled: "LayIM启用"
+
+  global_friend_group: "全员"
+  global_group: "全员群组"

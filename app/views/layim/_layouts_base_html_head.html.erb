@@ -1,0 +1,7 @@
+<%= javascript_include_tag "action_cable", :plugin => 'redmine_layim' %>
+<%= javascript_include_tag "cable", :plugin => 'redmine_layim' %>
+<% if User.current.logged? %>
+<% content_for :header_tags do %>
+<%= stylesheet_link_tag "layui", :plugin => "redmine_layim", media: 'all' %>
+<% end %>
+<% end %>

@@ -1,0 +1,131 @@
+<% if User.current.logged? %>
+<%= javascript_include_tag "layui", :plugin => 'redmine_layim' %>
+<script>
+<% if @project.blank? %> 
+  var init_url = "/layim"
+<% else %>
+  var init_url = "/layim?id=<%= @project.id %>"
+<% end %>
+layui.use('layim', function(layim){
+  layim.config({
+    init: {
+      url: init_url
+      ,type: 'get' //默认get，一般可不填
+      ,data: {} //额外参数
+    } 
+    //获取群员接口（返回的数据格式见下文）
+    ,members: {
+      url: '/layim_group' //接口地址（返回的数据格式见下文）
+      ,type: 'get' //默认get，一般可不填
+      ,data: {} //额外参数
+    }
+    ,brief: false //是否简约模式（如果true则不显示主面板）
+    ,title: "<%= Setting[:plugin_redmine_layim][:layim_min_title].blank? ? l(:default_layim_min_title) : Setting[:plugin_redmine_layim][:layim_min_title] %>"
+    ,min: true
+    ,isgroup: true
+    ,initSkin: "<%= User.current.init_skin.blank? ? '':User.current.init_skin %>"
+    ,copyright: true
+  
+  });
+  
+  App.chat = App.cable.subscriptions.create("ChatChannel", {
+    connected: function() {},
+    disconnected: function() {},
+    received: function(data) {
+      
+      // 获得用户发送的原始消息
+      var res = JSON.parse(data);
+      /* 
+      layim.getMessage({
+        username: "纸飞机" //消息来源用户名
+        ,avatar: "http://tp1.sinaimg.cn/1571889140/180/40030060651/1" //消息来源用户头像
+        ,id: "100000" //消息的来源ID（如果是私聊，则是用户id，如果是群聊，则是群组id）
+        ,type: "friend" //聊天窗口来源类型，从发送消息传递的to里面获取
+        ,content: "嗨，你好！本消息系离线消息。" //消息内容
+        ,cid: 0 //消息id，可不传。除非你要对消息进行一些操作（如撤回）
+        ,mine: false //是否我发送的消息，如果为true，则会显示在右方
+        ,fromid: "100000" //消息的发送者id（比如群组中的某个消息发送者），可用于自动解决浏览器多窗口时的一些问题
+        ,timestamp: 1467475443306 //服务端时间戳毫秒数。注意：如果你返回的是标准的 unix 时间戳，记得要 *1000
+      });
+      */
+      
+      if(res.type === 'chatMessage'){
+        $('#messages').append("<p>" + data + "</p>");
+        // 进行消息解析和转换
+        var maindata = res.data;
+        var minedata = maindata.mine;
+        var todata = maindata.to;
+        // 进行用户判断 
+        if (todata.type == "friend") {
+          if ('<%= User.current.id %>' == minedata.id) {  // 如果是发送主体
+          // console.log("mine"); 自己发的消息，不需要提醒
+            if ('<%= User.current.id %>' == todata.id) {  // 如果是发送主体
+            // console.log("tomine"); 自己发给自己的消息，不需要处理
+            }
+          } else {
+            if ('<%= User.current.id %>' == todata.id) {  // 如果是发送主体
+              layim.getMessage({
+                username: minedata.username //消息来源用户名
+                ,avatar: minedata.avatar //消息来源用户头像
+                ,id: minedata.id //消息的来源ID（如果是私聊，则是用户id，如果是群聊，则是群组id）
+                ,type: todata.type //聊天窗口来源类型，从发送消息传递的to里面获取
+                ,content: minedata.content //消息内容
+                ,cid: 0 //消息id，可不传。除非你要对消息进行一些操作（如撤回）
+                ,mine: false //是否我发送的消息，如果为true会显示在右方
+                ,fromid: minedata.id //消息的发送者id（比如群组中的某个消息发送者），可用于自动解决浏览器多窗口时的一些问题
+                ,timestamp: Date.parse(new Date())  //服务端时间戳毫秒数。注意：如果你返回的是标准的 unix 时间戳，记得要 *1000
+              });
+            }
+          }
+        }
+        if (todata.type == "group") {
+          layim.getMessage({
+            username: minedata.username //消息来源用户名
+            ,avatar: minedata.avatar //消息来源用户头像
+            ,id: todata.id //消息的来源ID（如果是私聊，则是用户id，如果是群聊，则是群组id）
+            ,type: todata.type //聊天窗口来源类型，从发送消息传递的to里面获取
+            ,content: minedata.content //消息内容
+            ,cid: 0 //消息id，可不传。除非你要对消息进行一些操作（如撤回）
+            ,mine: false //是否我发送的消息，如果为true会显示在右方
+            ,fromid: minedata.id //消息的发送者id（比如群组中的某个消息发送者），可用于自动解决浏览器多窗口时的一些问题
+            ,timestamp: Date.parse(new Date())  //服务端时间戳毫秒数。注意：如果你返回的是标准的 unix 时间戳，记得要 *1000
+          });
+        }
+      }
+    },
+    speak: function(message) {
+      return this.perform('speak', {
+        message: message
+      });
+    }
+  });
+
+  layim.on('sendMessage', function(res){
+    var mine = res.mine; //包含我发送的消息及我的信息
+    var to = res.to; //对方的信息
+    //监听到上述消息后，就可以轻松地发送socket了，如：
+    App.chat.speak(JSON.stringify({
+      type: 'chatMessage' //随便定义，用于在服务端区分消息类型
+      ,data: res
+    })); 
+    
+  });
+  
+  
+  layim.on('online', function(status){
+    $.get("/layim_update_status", { status: status });
+    //此时，你就可以通过Ajax将这个状态值记录到数据库中了。
+    //服务端接口需自写。
+  });   
+  
+  layim.on('sign', function(value){
+    $.get("/layim_update_sign", { sign: value});
+  }); 
+  
+  
+  layim.on('setSkin', function(filename, src){
+    $.get("/layim_update_init_skin", { init_skin: filename});
+  });
+});
+</script>
+<% end %>

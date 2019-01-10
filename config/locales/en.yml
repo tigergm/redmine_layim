@@ -1,0 +1,9 @@
+# English strings go here for Rails i18n
+en:
+  # my_label: "My label"
+  layim_min_title: "Main Min Panel Title"
+  default_layim_min_title: "RIM Messager"
+  layim_enabled: "LayIM Enabled"
+
+  global_friend_group: "global"
+  global_group: "global group"
