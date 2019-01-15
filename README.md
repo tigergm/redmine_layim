@@ -43,7 +43,7 @@ Redmine内置的消息推送。
 2、安装必要的gem类库，如果是生产环境，则建议带--without参数：
 bundle install --without development test
 
-3、执行数据迁移：
+3、执行数据迁移（注意如果只是试验，尽量不要加RAILS_ENV参数）：
 rake redmine:plugins:migrate NAME=redmine_layim RAILS_ENV=production
 
 4、复制必要的文件以启用ActionCable：
