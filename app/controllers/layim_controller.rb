@@ -203,4 +203,81 @@ class LayimController < ApplicationController
       User.current.update_attributes init_skin:skin unless User.current.anonymous?
     end 
   end
+  
+  
+  # 上传图片
+  def upload_image
+    uploaded_io = params[:file]
+
+    upload_dir_main = Rails.root.join('public', 'layim_upload')
+    # 先检查是否有layim的上传目录，没有则新建
+    unless Dir.exist?(upload_dir_main)
+      Dir.mkdir(upload_dir_main)
+    end
+    # 再检查是否有日期序列目录，没有则新建
+    upload_dir_date = Rails.root.join(upload_dir_main, Date.today.to_s)
+    unless Dir.exist?(upload_dir_date)
+      Dir.mkdir(upload_dir_date)
+    end
+
+    random_file_name = SecureRandom.urlsafe_base64 # 安全起见，生成随机id的文件 
+    original_filename = uploaded_io.original_filename
+    ext_name = File.extname(original_filename)
+    full_name = random_file_name + ext_name
+    full_path = Rails.root.join(upload_dir_date, full_name)
+    File.open(full_path, 'wb') do |file|
+      # 读取文件并保存
+      file.write(uploaded_io.read)
+    end
+    
+    image_data = {
+      "code": 0,
+      "msg": "",
+      "data": {
+        "src": "/" + full_path.relative_path_from(Rails.root.join("public")).to_s
+      }
+    }
+    respond_to do |format|
+      # 返回json格式的数据
+      format.html { render json: image_data }
+    end
+  end
+  
+  # 上传附件
+  def upload_file
+    uploaded_io = params[:file]
+
+    upload_dir_main = Rails.root.join('public', 'layim_upload')
+    # 先检查是否有layim的上传目录，没有则新建
+    unless Dir.exist?(upload_dir_main)
+      Dir.mkdir(upload_dir_main)
+    end
+    # 再检查是否有日期序列目录，没有则新建
+    upload_dir_date = Rails.root.join(upload_dir_main, Date.today.to_s)
+    unless Dir.exist?(upload_dir_date)
+      Dir.mkdir(upload_dir_date)
+    end
+
+    # 区别于图片，这个用原始文件名
+    original_filename = uploaded_io.original_filename
+    ext_name = File.extname(original_filename)
+    full_path = Rails.root.join(upload_dir_date, original_filename)
+    File.open(full_path, 'wb') do |file|
+      # 读取文件并保存
+      file.write(uploaded_io.read)
+    end
+    
+    file_data = {
+      "code": 0,
+      "msg": "",
+      "data": {
+        "src": "/" + full_path.relative_path_from(Rails.root.join("public")).to_s,
+        "name": original_filename
+      }
+    }
+    respond_to do |format|
+      # 返回json格式的数据
+      format.html { render json: file_data }
+    end
+  end
 end
